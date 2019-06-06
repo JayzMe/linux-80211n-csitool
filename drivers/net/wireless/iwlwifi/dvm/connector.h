@@ -49,6 +49,7 @@ extern char *connector_name;
 void connector_send_msg(const u8 *data, const u32 size, const u8 code);
 void iwl_connector_set_priv(struct iwl_priv *p);
 void connector_tasklet(unsigned long trash);
+extern int iwlagn_hop_config(struct iwl_priv *priv,u16 hwvalue);
 
 #define CN_IDX_IWLAGN	(CN_NETLINK_USERS + 0xf)
 #define CN_VAL_IWLAGN	0x1

@@ -1211,6 +1211,79 @@ void iwlagn_config_ht40(struct ieee80211_conf *conf,
 	}
 }
 
+int iwlagn_hop_config(struct iwl_priv *priv, u16 hwvalue)
+{
+	struct ieee80211_hw *hw = priv->hw;
+	struct iwl_rxon_context *ctx;
+	struct ieee80211_conf *conf = &hw->conf;
+	struct ieee80211_channel *channel = conf->chandef.chan;
+	struct ieee80211_channel *hopchannel = NULL;
+	int ret = 0;
+
+	hopchannel = &priv->nvm_data->channels[hwvalue];
+	printk(KERN_ERR "CSI debug: the hwvalue for hopchannel is %d.\n", hwvalue);
+
+	mutex_lock(&priv->mutex);
+
+	if (unlikely(test_bit(STATUS_SCANNING, &priv->status))) {
+		IWL_DEBUG_MAC80211(priv, "leave - scanning\n");
+		goto out;
+	}
+
+	if (!iwl_is_ready(priv)) {
+		IWL_DEBUG_MAC80211(priv, "leave - not ready\n");
+		goto out;
+	}
+
+	for_each_context(priv, ctx) {
+			/* Configure HT40 channels */
+			if (ctx->ht.enabled != conf_is_ht(conf))
+				ctx->ht.enabled = conf_is_ht(conf);
+
+			if (ctx->ht.enabled) {
+				/* if HT40 is used, it should not change
+				 * after associated except channel switch */
+				if (!ctx->ht.is_40mhz ||
+						!iwl_is_associated_ctx(ctx))
+					iwlagn_config_ht40(conf, ctx);
+			} else
+				ctx->ht.is_40mhz = false;
+
+			/*
+			 * Default to no protection. Protection mode will
+			 * later be set from BSS config in iwl_ht_conf
+			 */
+			ctx->ht.protection = IEEE80211_HT_OP_MODE_PROTECTION_NONE;
+
+			/* if we are switching from ht to 2.4 clear flags
+			 * from any ht related info since 2.4 does not
+			 * support ht */
+			if (le16_to_cpu(ctx->staging.channel) !=
+			    channel->hw_value)
+				ctx->staging.flags = 0;
+
+			iwl_set_rxon_channel(priv, channel, ctx);
+			iwl_set_rxon_ht(priv, &priv->current_ht_config);
+
+			iwl_set_flags_for_band(priv, ctx, channel->band,
+					       ctx->vif);
+		}
+
+	iwl_update_bcast_stations(priv);
+
+	for_each_context(priv, ctx) {
+		if (!memcmp(&ctx->staging, &ctx->active, sizeof(ctx->staging)))
+			continue;
+		iwlagn_commit_rxon(priv, ctx);
+	}
+ out:
+	mutex_unlock(&priv->mutex);
+	IWL_DEBUG_MAC80211(priv, "leave\n");
+	memcpy(channel, hopchannel, sizeof(struct ieee80211_channel));
+	return ret;
+}
+EXPORT_SYMBOL(iwlagn_hop_config);
+
 int iwlagn_mac_config(struct ieee80211_hw *hw, u32 changed)
 {
 	struct iwl_priv *priv = IWL_MAC80211_GET_DVM(hw);

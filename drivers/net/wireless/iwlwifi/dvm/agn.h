@@ -148,6 +148,7 @@ int iwlagn_set_pan_params(struct iwl_priv *priv);
 int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx);
 void iwlagn_set_rxon_chain(struct iwl_priv *priv, struct iwl_rxon_context *ctx);
 int iwlagn_mac_config(struct ieee80211_hw *hw, u32 changed);
+int iwlagn_hop_config(struct iwl_priv *priv, u16 hwvalue);
 void iwlagn_bss_info_changed(struct ieee80211_hw *hw,
 			     struct ieee80211_vif *vif,
 			     struct ieee80211_bss_conf *bss_conf,

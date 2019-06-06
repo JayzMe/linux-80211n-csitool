@@ -155,9 +155,12 @@ EXPORT_SYMBOL(connector_send_msg);
 
 void connector_callback(struct cn_msg *msg, struct netlink_skb_parms *nsp)
 {
-	printk(KERN_ERR "%s: %lu: unhandled message idx=%x, val=%x, seq=%u, ack=%u, len=%d.\n",
+	u16 temp_value = 0;
+	printk(KERN_ERR "CSI debug: %s: %lu: unhandled message idx=%x, val=%x, seq=%u, ack=%u, len=%d.\n",
 		__func__, jiffies, msg->id.idx, msg->id.val,
 	msg->seq, msg->ack, msg->len);
+	temp_value = msg->data[0];
+	iwlagn_hop_config(priv, temp_value);
 }
 EXPORT_SYMBOL(connector_callback);
 int iwlagn_register_connector(void)
@@ -176,7 +179,7 @@ int iwlagn_register_connector(void)
 	spin_lock_init(&connector_lock);
 	INIT_WORK(&connector_work_s, connector_work);
 
-	printk(KERN_INFO "iwlagn: connector callback registered\n");
+	printk(KERN_INFO "iwlagn: connector callback registered and the driver is modified to test channel hopping!\n");
 	return 0;
 }
 EXPORT_SYMBOL(iwlagn_register_connector);
