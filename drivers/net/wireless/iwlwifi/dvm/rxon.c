@@ -1259,13 +1259,13 @@ int iwlagn_hop_config(struct iwl_priv *priv, u16 hwvalue)
 			 * from any ht related info since 2.4 does not
 			 * support ht */
 			if (le16_to_cpu(ctx->staging.channel) !=
-			    channel->hw_value)
+			    hopchannel->hw_value)
 				ctx->staging.flags = 0;
 
-			iwl_set_rxon_channel(priv, channel, ctx);
+			iwl_set_rxon_channel(priv, hopchannel, ctx);
 			iwl_set_rxon_ht(priv, &priv->current_ht_config);
 
-			iwl_set_flags_for_band(priv, ctx, channel->band,
+			iwl_set_flags_for_band(priv, ctx, hopchannel->band,
 					       ctx->vif);
 		}
 
