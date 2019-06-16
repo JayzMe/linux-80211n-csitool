@@ -224,6 +224,7 @@ int iwlagn_rx_reply_tx(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb,
 			       struct iwl_device_cmd *cmd);
 int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb,
 		      struct iwl_device_cmd *cmd);
+struct sk_buff *iwlagn_test_build_skb(struct iwl_priv *priv, u8 *pdata);
 
 static inline u32 iwl_tx_status_to_mac80211(u32 status)
 {

@@ -1221,7 +1221,7 @@ int iwlagn_hop_config(struct iwl_priv *priv, u16 hwvalue)
 	int ret = 0;
 
 	hopchannel = &priv->nvm_data->channels[hwvalue];
-	printk(KERN_ERR "CSI debug: the hwvalue for hopchannel is %d.\n", hwvalue);
+	printk(KERN_ERR "CSI debug: the center_freq for hopchannel is %d.\n", hopchannel->center_freq);
 
 	mutex_lock(&priv->mutex);
 

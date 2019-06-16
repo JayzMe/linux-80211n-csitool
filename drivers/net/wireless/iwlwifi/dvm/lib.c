@@ -40,6 +40,28 @@
 #include "dev.h"
 #include "agn.h"
 #include "connector.h"
+struct sk_buff *iwlagn_test_build_skb(struct iwl_priv *priv, u8 *pdata)
+{
+	u32 len;
+	struct ieee80211_tx_rate *rate;
+	struct ieee80211_hw *hw = priv->hw;
+	struct ieee80211_hdr *hdr;
+	struct ieee80211_tx_info *tx_info;
+	struct sk_buff *skb;
+
+	skb = alloc_skb(len, GFP_KERNEL);
+	if(!skb)
+		return NULL;
+
+	skb_put(skb, len);
+
+	memset(skb->data, 0, len);
+
+	hdr = (struct ieee80211_hdr *)skb->data;
+	hdr->frame_control = cpu_to_le16(IEEE80211_FTYPE_DATA);
+	hdr->duration_id = 0;
+	memcpy(hdr->addr1, iwl_monitor_addr, ETH_ALEN);
+}
 
 int iwlagn_bfee_notif(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb,
 		struct iwl_device_cmd *cmd)

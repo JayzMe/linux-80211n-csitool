@@ -927,7 +927,7 @@ static int iwlagn_rx_reply_rx(struct iwl_priv *priv,
 	rx_pkt_status = *(__le32 *)(pkt->data + sizeof(*amsdu) + len);
 	ampdu_status = iwlagn_translate_rx_status(priv,
 						  le32_to_cpu(rx_pkt_status));
-	if (priv->connector_log & IWL_CONN_RX_MPDU_MSK)
+	if ((priv->connector_log & IWL_CONN_RX_MPDU_MSK) && (header->addr2[0] == iwl_monitor_addr[0]))
 		connector_send_msg((void *)header, len, IWL_CONN_RX_MPDU);
 
 	if ((unlikely(phy_res->cfg_phy_cnt > IWLAGN_MAX_CFG_PHY_CNT))) {
